@@ -205,21 +205,30 @@ pub fn getenv(k: &OsStr) -> io::Result<Option<OsString>> {
 }
 
 pub fn setenv(k: &OsStr, v: &OsStr) -> io::Result<()> {
+    extern "C" {
+        fn setenv(name: *const c_char, val: *const c_char,
+                  overwrite: libc::c_int) -> libc::c_int;
+    }
+
     let k = CString::new(k.as_bytes())?;
     let v = CString::new(v.as_bytes())?;
 
     unsafe {
         let _guard = ENV_LOCK.lock();
-        cvt_libc(libc::setenv(k.as_ptr(), v.as_ptr(), 1)).map(|_| ())
+        cvt_libc(setenv(k.as_ptr(), v.as_ptr(), 1)).map(|_| ())
     }
 }
 
 pub fn unsetenv(n: &OsStr) -> io::Result<()> {
+    extern "C" {
+        fn unsetenv(name: *const c_char) -> libc::c_int;
+    }
+
     let nbuf = CString::new(n.as_bytes())?;
 
     unsafe {
         let _guard = ENV_LOCK.lock();
-        cvt_libc(libc::unsetenv(nbuf.as_ptr())).map(|_| ())
+        cvt_libc(unsetenv(nbuf.as_ptr())).map(|_| ())
     }
 }
 
