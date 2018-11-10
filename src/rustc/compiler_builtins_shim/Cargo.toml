@@ -34,7 +34,8 @@ cc = "1.0.1"
 
 [features]
 c = []
-default = ["c", "rustbuild", "compiler-builtins"]
+default = ["c", "rustbuild", "compiler-builtins", "mangled-names"]
 mem = []
 rustbuild = []
 compiler-builtins = []
+mangled-names = []
