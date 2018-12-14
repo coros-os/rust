@@ -503,7 +503,7 @@ impl Step for Rustc {
             return;
         }
 
-        if builder.force_use_stage1(compiler, target) {
+        if builder.force_use_stage1(compiler, target) && !target.contains("redox") /* Explained below */ {
             builder.ensure(Rustc {
                 compiler: builder.compiler(1, builder.config.build),
                 target,
@@ -524,12 +524,45 @@ impl Step for Rustc {
             target: builder.config.build,
         });
 
-        let mut cargo = builder.cargo(compiler, Mode::Rustc, target, "build");
+        let mut cargo = builder.cargo(compiler, Mode::Rustc, target, "rustc");
         rustc_cargo(builder, &mut cargo);
 
         let _folder = builder.fold_output(|| format!("stage{}-rustc", compiler.stage));
         builder.info(&format!("Building stage{} compiler artifacts ({} -> {})",
                  compiler.stage, &compiler.host, target));
+
+        if compiler.stage == 2 && target.contains("redox") {
+            use std::fs::File;
+
+            // On the second stage, link the codegen library statically, replacing the weakly linked
+            // symbol defined in librustc_driver
+            let stamp = codegen_backend_stamp(
+                builder,
+                builder.compiler(1, builder.config.build),
+                target,
+                INTERNER.intern_str("llvm")
+            );
+            
+            if let Ok(mut f) = File::open(&stamp) {
+                let mut codegen_library = String::new();
+                t!(f.read_to_string(&mut codegen_library));
+
+                cargo.env("RUSTFLAGS", "--cfg feature=\"codegen_rlib\"");
+
+                cargo.args(&[
+                    "--verbose".to_string(),
+                    "--".to_string(),
+                    format!("-Clinker=x86_64-unknown-redox-g++"),
+                    format!("-Clink-arg={}", codegen_library),
+                    format!("-Clink-arg=-lstdc++"),
+                    format!("-Clink-arg=-lc"),
+                    format!("-Clink-arg=-lm"),
+                    format!("-Clink-arg=-lpthread"),
+                    format!("-Clink-arg=-lgcc"),
+                ]);
+            }
+        }
+
         run_cargo(builder,
                   &mut cargo,
                   &librustc_stamp(builder, compiler, target),
@@ -698,6 +731,7 @@ impl Step for CodegenBackend {
         let mut files = files.into_iter()
             .filter(|f| {
                 let filename = f.file_name().unwrap().to_str().unwrap();
+                target.contains("redox") && filename.ends_with(".a") && filename.contains("rustc_codegen_llvm-") ||
                 is_dylib(filename) && filename.contains("rustc_codegen_llvm-")
             });
         let codegen_backend = match files.next() {
@@ -872,7 +906,7 @@ pub fn librustc_stamp(
 
 /// Cargo's output path for librustc_codegen_llvm in a given stage, compiled by a particular
 /// compiler for the specified target and backend.
-fn codegen_backend_stamp(builder: &Builder<'_>,
+pub fn codegen_backend_stamp(builder: &Builder<'_>,
                          compiler: Compiler,
                          target: Interned<String>,
                          backend: Interned<String>) -> PathBuf {
@@ -1095,7 +1129,8 @@ pub fn run_cargo(builder: &Builder<'_>,
         };
         for filename in filenames {
             // Skip files like executables
-            if !filename.ends_with(".rlib") &&
+            if !filename.ends_with(".a") &&
+               !filename.ends_with(".rlib") &&
                !filename.ends_with(".lib") &&
                !is_dylib(&filename) &&
                !(is_check && filename.ends_with(".rmeta")) {

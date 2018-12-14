@@ -7,14 +7,14 @@ edition = "2018"
 [lib]
 name = "rustc"
 path = "lib.rs"
-crate-type = ["dylib"]
+crate-type = ["dylib", "rlib"]
 
 [dependencies]
 arena = { path = "../libarena" }
 bitflags = "1.0"
 fmt_macros = { path = "../libfmt_macros" }
 graphviz = { path = "../libgraphviz" }
-jobserver = "0.1"
+jobserver = { path = "../jobserver" }
 lazy_static = "1.0.0"
 num_cpus = "1.0"
 scoped-tls = "1.0"

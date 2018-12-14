@@ -107,7 +107,7 @@ pub fn rename_or_copy_remove<P: AsRef<Path>, Q: AsRef<Path>>(p: P,
     }
 }
 
-#[cfg(unix)]
+#[cfg(any(unix, target_os = "redox"))]
 pub fn path_to_c_string(p: &Path) -> CString {
     use std::os::unix::ffi::OsStrExt;
     use std::ffi::OsStr;

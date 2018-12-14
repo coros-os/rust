@@ -251,6 +251,11 @@ pub fn record_time<T, F>(accu: &Lock<Duration>, f: F) -> T where
 }
 
 // Memory reporting
+#[cfg(not(any(unix, windows)))]
+fn get_resident() -> Option<usize> {
+    None
+}
+
 #[cfg(unix)]
 fn get_resident() -> Option<usize> {
     use std::fs;
