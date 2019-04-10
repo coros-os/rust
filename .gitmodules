@@ -47,7 +47,3 @@
 [submodule "src/doc/embedded-book"]
 	path = src/doc/embedded-book
 	url = https://github.com/rust-embedded/book.git
-[submodule "src/jobserver"]
-	path = src/jobserver
-	url = https://gitlab.redox-os.org/redox-os/jobserver-rs.git
-	branch = redox
