@@ -217,6 +217,7 @@ impl<'a> Prefix<'a> {
             },
             DeviceNS(x) => 4 + os_str_len(x),
             Disk(_) => 2,
+            #[cfg(target_os = "redox")]
             Scheme(x) => 1 + os_str_len(x),
         }
 
