@@ -18,13 +18,14 @@ pub fn opts() -> TargetOptions {
     ]);
 
     TargetOptions {
-        pre_link_args: args,
+        dynamic_linking: true,
         executables: true,
-        relocation_model: "static".to_string(),
-        disable_redzone: true,
-        eliminate_frame_pointer: false,
         target_family: Some("redox".to_string()),
         linker_is_gnu: true,
+        has_rpath: true,
+        pre_link_args: args,
+        position_independent_executables: true,
+        relro_level: RelroLevel::Full,
         has_elf_tls: true,
         .. Default::default()
     }
