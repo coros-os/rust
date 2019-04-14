@@ -38,7 +38,7 @@ fn main() {
     } else if target.contains("haiku") {
         println!("cargo:rustc-link-lib=gcc_s");
     } else if target.contains("redox") {
-        println!("cargo:rustc-link-lib=static-nobundle=gcc_eh");
+        println!("cargo:rustc-link-lib=gcc_s");
     } else if target.contains("cloudabi") {
         println!("cargo:rustc-link-lib=unwind");
     }
