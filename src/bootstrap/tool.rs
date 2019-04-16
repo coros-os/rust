@@ -478,7 +478,7 @@ impl Step for Rustdoc {
             build_compiler,
             Mode::ToolRustc,
             target,
-            "rustc",
+            "build",
             "src/tools/rustdoc",
             SourceType::InTree,
             &[],
@@ -491,42 +491,6 @@ impl Step for Rustdoc {
         let _folder = builder.fold_output(|| format!("stage{}-rustdoc", target_compiler.stage));
         builder.info(&format!("Building rustdoc for stage{} ({})",
             target_compiler.stage, target_compiler.host));
-
-        if target_compiler.stage == 2 && target_compiler.host.contains("redox") {
-            use crate::cache::INTERNER;
-            use compile::codegen_backend_stamp;
-            use std::fs::File;
-            use std::io::Read;
-
-            // On the second stage, link the codegen library statically, replacing the weakly linked
-            // symbol defined in librustc_driver
-            let stamp = codegen_backend_stamp(
-                builder,
-                builder.compiler(1, builder.config.build),
-                target,
-                INTERNER.intern_str("llvm")
-            );
-
-            if let Ok(mut f) = File::open(&stamp) {
-                let mut codegen_library = String::new();
-                t!(f.read_to_string(&mut codegen_library));
-
-                cargo.env("RUSTFLAGS", "--cfg feature=\"codegen_rlib\"");
-
-                cargo.args(&[
-                    "--verbose".to_string(),
-                    "--".to_string(),
-                    format!("-Clinker=x86_64-unknown-redox-g++"),
-                    format!("-Clink-arg={}", codegen_library),
-                    format!("-Clink-arg=-lstdc++"),
-                    format!("-Clink-arg=-lc"),
-                    format!("-Clink-arg=-lm"),
-                    format!("-Clink-arg=-lpthread"),
-                    format!("-Clink-arg=-lgcc"),
-                ]);
-            }
-        }
-
         builder.run(&mut cargo);
 
         // Cargo adds a number of paths to the dylib search path on windows, which results in

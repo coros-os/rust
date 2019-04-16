@@ -69,6 +69,7 @@ rustc-workspace-hack = { path = 'src/tools/rustc-workspace-hack' }
 rustc-std-workspace-core = { path = 'src/tools/rustc-std-workspace-core' }
 
 jobserver = { git = "https://gitlab.redox-os.org/redox-os/jobserver-rs.git", branch = "redox" }
+memmap = { git = "https://gitlab.redox-os.org/redox-os/memmap-rs.git", branch = "redox" }
 
 [patch."https://github.com/rust-lang/rust-clippy"]
 clippy_lints = { path = "src/tools/clippy/clippy_lints" }

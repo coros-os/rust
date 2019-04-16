@@ -7,7 +7,7 @@ edition = "2018"
 [lib]
 name = "rustc_data_structures"
 path = "lib.rs"
-crate-type = ["dylib", "rlib"]
+crate-type = ["dylib"]
 
 [dependencies]
 ena = "0.13"
