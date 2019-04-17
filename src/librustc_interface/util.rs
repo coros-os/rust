@@ -386,6 +386,11 @@ pub fn get_codegen_sysroot(backend_name: &str) -> fn() -> Box<dyn CodegenBackend
         }
     }
 
+    #[cfg(target_os = "redox")]
+    fn current_dll_path() -> Option<PathBuf> {
+        None
+    }
+
     #[cfg(unix)]
     fn current_dll_path() -> Option<PathBuf> {
         use std::ffi::{OsStr, CStr};
