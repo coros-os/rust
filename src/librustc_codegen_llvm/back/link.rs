@@ -762,7 +762,7 @@ fn exec_linker(sess: &Session, cmd: &mut Command, out_filename: &Path, tmpdir: &
     flush_linked_file(&output, out_filename)?;
     return output;
 
-    #[cfg(unix)]
+    #[cfg(any(unix, target_os = "redox"))]
     fn flush_linked_file(_: &io::Result<Output>, _: &Path) -> io::Result<()> {
         Ok(())
     }
@@ -788,6 +788,12 @@ fn exec_linker(sess: &Session, cmd: &mut Command, out_filename: &Path, tmpdir: &
         }
 
         Ok(())
+    }
+
+    #[cfg(target_os = "redox")]
+    fn command_line_too_big(err: &io::Error) -> bool {
+        // I don't have time for imports
+        err.raw_os_error() == Some(7)
     }
 
     #[cfg(unix)]

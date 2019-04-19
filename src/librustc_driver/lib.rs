@@ -382,7 +382,7 @@ pub fn set_sigpipe_handler() {
     }
 }
 
-#[cfg(windows)]
+#[cfg(any(not(unix), windows))]
 pub fn set_sigpipe_handler() {}
 
 // Extract output directory and file from matches.
@@ -456,6 +456,11 @@ impl Compilation {
 /// CompilerCalls instance for a regular rustc build.
 #[derive(Copy, Clone)]
 pub struct RustcDefaultCalls;
+
+#[cfg(not(any(unix, windows)))]
+fn stdout_isatty() -> bool {
+    false
+}
 
 // FIXME remove these and use winapi 0.3 instead
 // Duplicates: bootstrap/compile.rs, librustc_errors/emitter.rs

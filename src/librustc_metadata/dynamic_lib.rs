@@ -124,6 +124,30 @@ mod tests {
     }
 }
 
+#[cfg(not(any(unix, windows)))]
+mod dl {
+    use libc;
+    use std::ffi::OsStr;
+
+    pub fn open(_filename: Option<&OsStr>) -> Result<*mut u8, String> {
+        Err("dl::open: dynamic libraries are not supported on this platform".to_string())
+    }
+
+    pub fn open_global_now(_filename: &OsStr) -> Result<*mut u8, String> {
+        Err("dl::open_global_now: dynamic libraries are not supported on this platform".to_string())
+    }
+
+    pub unsafe fn symbol(_handle: *mut u8,
+                         _symbol: *const libc::c_char)
+                         -> Result<*mut u8, String> {
+        Err("dl::symbol: dynamic libraries are not supported on this platform".to_string())
+    }
+
+    pub unsafe fn close(_handle: *mut u8) {
+
+    }
+}
+
 #[cfg(unix)]
 mod dl {
     use std::ffi::{CStr, OsStr, CString};
