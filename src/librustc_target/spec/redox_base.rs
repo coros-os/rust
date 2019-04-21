@@ -20,7 +20,7 @@ pub fn opts() -> TargetOptions {
     TargetOptions {
         dynamic_linking: true,
         executables: true,
-        target_family: Some("redox".to_string()),
+        target_family: Some("unix".to_string()),
         linker_is_gnu: true,
         has_rpath: true,
         pre_link_args: args,
