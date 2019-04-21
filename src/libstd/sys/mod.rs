@@ -32,9 +32,6 @@ cfg_if! {
     } else if #[cfg(target_os = "cloudabi")] {
         mod cloudabi;
         pub use self::cloudabi::*;
-    } else if #[cfg(target_os = "redox")] {
-        mod redox;
-        pub use self::redox::*;
     } else if #[cfg(target_env = "wasi")] {
         mod wasi;
         pub use self::wasi::*;
@@ -55,7 +52,7 @@ cfg_if! {
 
 #[cfg(rustdoc)]
 cfg_if! {
-    if #[cfg(any(unix, target_os = "redox"))] {
+    if #[cfg(unix)] {
         // On unix we'll document what's already available
         #[stable(feature = "rust1", since = "1.0.0")]
         pub use self::ext as unix_ext;

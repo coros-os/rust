@@ -28,6 +28,7 @@ exclude = [
   "build",
   # HACK(eddyb) This hardcodes the fact that our CI uses `/checkout/obj`.
   "obj",
+  "src/liblibc",
 ]
 
 # Curiously, LLVM 7.0 will segfault if compiled with opt-level=3
@@ -69,7 +70,7 @@ rustc-workspace-hack = { path = 'src/tools/rustc-workspace-hack' }
 rustc-std-workspace-core = { path = 'src/tools/rustc-std-workspace-core' }
 
 # Redox patches
-libc = { git = "https://gitlab.redox-os.org/redox-os/liblibc.git", branch = "redox" }
+libc = { path = "src/liblibc" }
 
 [patch."https://github.com/rust-lang/rust-clippy"]
 clippy_lints = { path = "src/tools/clippy/clippy_lints" }

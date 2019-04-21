@@ -383,6 +383,11 @@ pub fn current_exe() -> io::Result<PathBuf> {
     }
 }
 
+#[cfg(target_os = "redox")]
+pub fn current_exe() -> io::Result<PathBuf> {
+    crate::fs::read_to_string("sys:exe").map(PathBuf::from)
+}
+
 #[cfg(any(target_os = "fuchsia", target_os = "l4re", target_os = "hermit"))]
 pub fn current_exe() -> io::Result<PathBuf> {
     use crate::io::ErrorKind;
@@ -512,11 +517,13 @@ pub fn home_dir() -> Option<PathBuf> {
 
     #[cfg(any(target_os = "android",
               target_os = "ios",
-              target_os = "emscripten"))]
+              target_os = "emscripten",
+              target_os = "redox"))]
     unsafe fn fallback() -> Option<OsString> { None }
     #[cfg(not(any(target_os = "android",
                   target_os = "ios",
-                  target_os = "emscripten")))]
+                  target_os = "emscripten",
+                  target_os = "redox")))]
     unsafe fn fallback() -> Option<OsString> {
         let amt = match libc::sysconf(libc::_SC_GETPW_R_SIZE_MAX) {
             n if n < 0 => 512 as usize,

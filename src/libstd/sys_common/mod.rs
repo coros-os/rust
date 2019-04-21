@@ -66,7 +66,6 @@ pub mod fs;
 cfg_if! {
     if #[cfg(any(target_os = "cloudabi",
                  target_os = "l4re",
-                 target_os = "redox",
                  all(target_arch = "wasm32", not(target_os = "emscripten")),
                  all(target_vendor = "fortanix", target_env = "sgx")))] {
         pub use crate::sys::net;
@@ -77,8 +76,7 @@ cfg_if! {
 
 #[cfg(feature = "backtrace")]
 #[cfg(any(all(unix, not(target_os = "emscripten")),
-          all(windows, target_env = "gnu"),
-          target_os = "redox"))]
+          all(windows, target_env = "gnu")))]
 pub mod gnu;
 
 // common error constructors
