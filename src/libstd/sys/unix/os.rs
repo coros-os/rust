@@ -38,6 +38,7 @@ extern {
                    target_os = "openbsd",
                    target_os = "android",
                    target_os = "hermit",
+                   target_os = "redox"
                    target_env = "newlib"),
                link_name = "__errno")]
     #[cfg_attr(target_os = "solaris", link_name = "___errno")]
