@@ -297,8 +297,13 @@ impl Stdio {
                 let mut opts = OpenOptions::new();
                 opts.read(readable);
                 opts.write(!readable);
+                #[cfg(not(target_os = "redox"))]
                 let path = unsafe {
                     CStr::from_ptr("/dev/null\0".as_ptr() as *const _)
+                };
+                #[cfg(target_os = "redox")]
+                let path = unsafe {
+                    CStr::from_ptr("null:\0".as_ptr() as *const _)
                 };
                 let fd = File::open_c(&path, &opts)?;
                 Ok((ChildStdio::Owned(fd.into_fd()), None))
