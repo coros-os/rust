@@ -166,6 +166,9 @@ mod imp {
 
 #[cfg(target_os = "redox")]
 mod imp {
+    use crate::fs::File;
+    use crate::io::Read;
+    
     pub fn fill_bytes(v: &mut [u8]) {
         // Open rand:, read from it, and close it again.
         let mut file = File::open("rand:").expect("failed to open rand:");
