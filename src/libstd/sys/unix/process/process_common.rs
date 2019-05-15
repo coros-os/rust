@@ -353,6 +353,7 @@ impl ExitStatus {
         ExitStatus(status)
     }
 
+    #[cfg_attr(target_os = "redox", allow(unused_unsafe))]
     fn exited(&self) -> bool {
         unsafe { libc::WIFEXITED(self.0) }
     }
@@ -361,6 +362,7 @@ impl ExitStatus {
         self.code() == Some(0)
     }
 
+    #[cfg_attr(target_os = "redox", allow(unused_unsafe))]
     pub fn code(&self) -> Option<i32> {
         if self.exited() {
             Some(unsafe { libc::WEXITSTATUS(self.0) })
@@ -369,6 +371,7 @@ impl ExitStatus {
         }
     }
 
+    #[cfg_attr(target_os = "redox", allow(unused_unsafe))]
     pub fn signal(&self) -> Option<i32> {
         if !self.exited() {
             Some(unsafe { libc::WTERMSIG(self.0) })
