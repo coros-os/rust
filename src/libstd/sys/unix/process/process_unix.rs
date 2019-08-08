@@ -184,7 +184,8 @@ impl Command {
             }
             if let Some(u) = self.get_uid() {
                 //FIXME: Redox kernel does not support setgroups yet
-                if cfg!(not(target_os = "redox")) {
+                #[cfg(not(target_os = "redox"))]
+                {
                     // When dropping privileges from root, the `setgroups` call
                     // will remove any extraneous groups. If we don't call this,
                     // then even though our uid has dropped, we may still have
